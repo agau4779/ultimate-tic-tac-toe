@@ -1,0 +1,51 @@
+@import url('http://fonts.googleapis.com/css?family=Roboto:100,300,400,700');
+
+/*tiled background from http://subtlepatterns.com/random-grey-variations/ */
+body {
+  background-color:black;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: repeat;
+  font-family: 'Roboto', sans-serif;
+  text-rendering: optimizeLegibility;
+  text-align: center;
+  margin: 50px;
+}
+
+.board {
+  background-color: white;
+  position: absolute;
+  left:50%;
+  top:50%;
+  height: 600px;
+  width: 600px;
+  margin-left:-300px;
+  margin-top:-300px;
+}
+
+.row {
+  display: inline-block;
+  height: 33%;
+  width: 100%;
+}
+
+.row:before,
+.row:after {
+    content:"";
+    display: table ;
+     clear:both;
+}
+
+.tile {
+  float: left;
+  min-height: 1px;
+  height: 100%;
+  width: 33%;
+}
+
+.x-class {
+  background-color: red;
+}
+.o-class {
+  background-color: blue;
+}

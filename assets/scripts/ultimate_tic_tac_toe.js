@@ -1,53 +1,101 @@
-$(document).ready(function(){
-  var board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-  var turnCount=0;
+var player_x = 'X';
+var player_o = 'O';
 
+var Tile = function Tile() {
+  this.inactive = true;
+  this.player = 0;
+};
+
+var Board = function Board() {
+  this.tiles = [];
+  this.turnCount = 0;
+  this.inactive = true;
+
+  for(var i=0; i<3; i++) {
+    var row = [];
+    for(var j=0; j<3; j++) {
+      row.push(new Tile());
+    };
+    this.tiles.push(row);
+  };
+};
+
+Board.prototype = {
+  current_player: function() {
+    var current_player;
+    if (this.turnCount % 2 === 0) {
+      return player_x;
+    } else {
+      return player_o;
+    };
+  },
+
+  play: function(x, y) {
+    if (this.inactive) {
+      var tile = this.tiles[x][y];
+      if (this.tiles[x][y].inactive) {
+        tile.inactive = false;
+        var current_player;
+        if (this.turnCount % 2 === 0) {
+          current_player = player_x;
+        } else {
+          current_player = player_o;
+        };
+        tile.player = current_player;
+        this.turnCount++;
+
+        if (this.checkVictory()) {
+          this.inactive = false;
+          console.log("Congratulations! " + current_player + " won!");
+        };
+      }
+      return true;
+    }
+    return false;
+  },
+
+  checkVictory: function() {
+    var row0 = this.checkLine([this.tiles[0][0], this.tiles[0][1], this.tiles[0][2]]);
+    var row1 = this.checkLine([this.tiles[1][0], this.tiles[1][1], this.tiles[1][2]]);
+    var row2 = this.checkLine([this.tiles[2][0], this.tiles[2][1], this.tiles[2][2]]);
+
+    var col0 = this.checkLine([this.tiles[0][0], this.tiles[1][0], this.tiles[2][0]]);
+    var col1 = this.checkLine([this.tiles[0][1], this.tiles[1][1], this.tiles[2][1]]);
+    var col2 = this.checkLine([this.tiles[0][2], this.tiles[1][2], this.tiles[2][2]]);
+
+    var diag1 = this.checkLine([this.tiles[0][0], this.tiles[1][1], this.tiles[2][2]]);
+    var diag2 = this.checkLine([this.tiles[2][0], this.tiles[1][1], this.tiles[0][2]]);
+    return (row0 || row1 || row2 || col0 || col1 || col2 || diag1 || diag2);
+  },
+
+  checkLine: function(arr) {
+    var first = arr[0];
+    if (first.inactive) { return false };
+    return arr.every(function(el) {
+      return el.player !== 0 && el.player === first.player;
+    });
+  }
+}
+
+$(document).ready(function(){
+  var board = new Board();
   $('.board.small').find('.tile').click(function(){
     if (!$(this).hasClass('inactive')) {
       var x = $(this).index();
       var y = $(this).parent().index();
-
-      if (turnCount % 2 === 0) {
-        $(this).addClass('inactive').addClass('x-class');
-        board[x][y] = 2;
-      } else {
-        $(this).addClass('inactive').addClass('o-class');
-        board[x][y] = 1;
-      }
-
-      turnCount++;
-      if (checkVictory(board)) {
-        var player = turnCount % 2 === 0 ? 'X' : 'O';
-        $('.tile').addClass('inactive');
-        alert("Congratulations! " + player + " won!");
+      $(this).addClass('inactive');
+      if (board.play(x, y)) {
+        if (board.current_player() == player_x) {
+          $(this).addClass('x-class');
+        } else {
+          $(this).addClass('o-class');
+        }
       }
     }
   });
 
-  function checkVictory(board) {
-    var row0 = checkLine([board[0][0], board[0][1], board[0][2]]);
-    var row1 = checkLine([board[1][0], board[1][1], board[1][2]]);
-    var row2 = checkLine([board[2][0], board[2][1], board[2][2]]);
-
-    var col0 = checkLine([board[0][0], board[1][0], board[2][0]]);
-    var col1 = checkLine([board[0][1], board[1][1], board[2][1]]);
-    var col2 = checkLine([board[0][2], board[1][2], board[2][2]]);
-
-    var diag1 = checkLine([board[0][0], board[1][1], board[2][2]]);
-    var diag2 = checkLine([board[2][0], board[1][1], board[0][2]]);
-    return (row0 || row1 || row2 || col0 || col1 || col2 || diag1 || diag2);
-  };
-
-  function checkLine(arr) {
-    first = arr[0];
-    if (first === 0) { return false };
-    return arr.every(function(el) {
-      return el !== 0 && el === first;
-    });
-  };
-
   $('#reset-btn').click(function() {
-    $('.tile').removeClass('x-class o-class inactive');
-    board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    board = new Board();
+    $('.board.small').find('.tile').removeClass('inactive o-class x-class');
   });
 });

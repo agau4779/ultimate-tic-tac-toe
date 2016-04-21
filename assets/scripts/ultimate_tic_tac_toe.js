@@ -87,6 +87,21 @@ Board.prototype = {
     return this.tiles.every(function(el) {
       return !el[0].active && !el[1].active && !el[2].active;
     });
+  },
+
+  printBoard: function() {
+    for(i=0;i<this.tiles.length;i++) {
+      var row = this.tiles[i];
+      var str = "";
+      for(j=0;j<row.length;j++) {
+        if (row[j].active) {
+          str += ' ';
+        } else {
+          str += row[j].player;
+        }
+      }
+      console.log(str);
+    }
   }
 }
 

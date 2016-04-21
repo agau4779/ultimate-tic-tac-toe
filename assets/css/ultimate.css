@@ -11,7 +11,7 @@ body {
   margin: 50px;
 }
 
-div.board {
+div.master_board {
   background-color: white;
   position: absolute;
   left:50%;
@@ -22,8 +22,14 @@ div.board {
   margin-top:-300px;
 }
 
+div.board.small {
+  float: left;
+  height: 100%;
+  width: 33%;
+}
+
 .row {
-  display: inline-block;
+  display: block;
   height: 33%;
   width: 100%;
 }

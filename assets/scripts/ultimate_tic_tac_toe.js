@@ -106,11 +106,26 @@ Board.prototype = {
 }
 
 $(document).ready(function(){
-  var board = new Board();
-  $('.board.small').find('.tile').click(function(){
+  window.boards = [];
+  var small_boards = $('.board.small');
+
+  for(i=0; i < 3; i++) {
+    var row = [];
+    for(j=0; j < 3; j++) {
+      row.push(new Board());
+    }
+    window.boards.push(row);
+  }
+
+  $('.master_board').find('.tile').click(function(){
     if (!$(this).hasClass('active')) {
-      var x = $(this).index();
-      var y = $(this).parent().index();
+      var board_x = $(this).parent().parent().parent().index();
+      var board_y = $(this).parent().parent().index();
+
+      var board = window.boards[board_x][board_y];
+
+      var x = $(this).parent().index();
+      var y = $(this).index();
       $(this).addClass('active');
       if (board.play(x, y)) {
         if (board.current_player() == player_x) {

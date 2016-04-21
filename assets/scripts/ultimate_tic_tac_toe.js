@@ -2,14 +2,15 @@ var player_x = 'X';
 var player_o = 'O';
 
 var Tile = function Tile() {
-  this.inactive = true;
+  this.active = true;
   this.player = 0;
 };
 
 var Board = function Board() {
   this.tiles = [];
   this.turnCount = 0;
-  this.inactive = true;
+  this.active = true;
+  this.player = 0;
 
   for(var i=0; i<3; i++) {
     var row = [];
@@ -31,10 +32,10 @@ Board.prototype = {
   },
 
   play: function(x, y) {
-    if (this.inactive) {
+    if (this.active) {
       var tile = this.tiles[x][y];
-      if (this.tiles[x][y].inactive) {
-        tile.inactive = false;
+      if (this.tiles[x][y].active) {
+        tile.active = false;
         var current_player;
         if (this.turnCount % 2 === 0) {
           current_player = player_x;
@@ -45,9 +46,15 @@ Board.prototype = {
         this.turnCount++;
 
         if (this.checkVictory()) {
-          this.inactive = false;
+          this.active = false;
+          this.player = current_player;
           console.log("Congratulations! " + current_player + " won!");
-        };
+        } else {
+          if (this.checkTie()) {
+            this.active = false;
+            console.log("It is a tie!");
+          }
+        }
       }
       return true;
     }
@@ -70,9 +77,15 @@ Board.prototype = {
 
   checkLine: function(arr) {
     var first = arr[0];
-    if (first.inactive) { return false };
+    if (first.active) { return false };
     return arr.every(function(el) {
       return el.player !== 0 && el.player === first.player;
+    });
+  },
+
+  checkTie: function() {
+    return this.tiles.every(function(el) {
+      return !el[0].active && !el[1].active && !el[2].active;
     });
   }
 }
@@ -80,10 +93,10 @@ Board.prototype = {
 $(document).ready(function(){
   var board = new Board();
   $('.board.small').find('.tile').click(function(){
-    if (!$(this).hasClass('inactive')) {
+    if (!$(this).hasClass('active')) {
       var x = $(this).index();
       var y = $(this).parent().index();
-      $(this).addClass('inactive');
+      $(this).addClass('active');
       if (board.play(x, y)) {
         if (board.current_player() == player_x) {
           $(this).addClass('x-class');
@@ -96,6 +109,6 @@ $(document).ready(function(){
 
   $('#reset-btn').click(function() {
     board = new Board();
-    $('.board.small').find('.tile').removeClass('inactive o-class x-class');
+    $('.board.small').find('.tile').removeClass('active o-class x-class');
   });
 });

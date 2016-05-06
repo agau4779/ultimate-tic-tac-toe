@@ -1,5 +1,5 @@
-var player_x = 'X';
-var player_o = 'O';
+var player_x = 'x';
+var player_o = 'o';
 
 var Tile = function Tile() {
   this.active = true;
@@ -8,9 +8,7 @@ var Tile = function Tile() {
 
 var Board = function Board() {
   this.tiles = [];
-  this.turnCount = 0;
   this.active = true;
-  this.player = 0;
 
   for(var i=0; i<3; i++) {
     var row = [];
@@ -22,37 +20,19 @@ var Board = function Board() {
 };
 
 Board.prototype = {
-  current_player: function() {
-    var current_player;
-    if (this.turnCount % 2 === 0) {
-      return player_x;
-    } else {
-      return player_o;
-    };
-  },
-
-  play: function(x, y) {
+  play: function(x, y, current_player) {
     if (this.active) {
       var tile = this.tiles[x][y];
       if (this.tiles[x][y].active) {
         tile.active = false;
-        var current_player;
-        if (this.turnCount % 2 === 0) {
-          current_player = player_x;
-        } else {
-          current_player = player_o;
-        };
         tile.player = current_player;
-        this.turnCount++;
 
         if (this.checkVictory()) {
           this.active = false;
           this.player = current_player;
-          console.log("Congratulations! " + current_player + " won!");
         } else {
           if (this.checkTie()) {
             this.active = false;
-            console.log("It is a tie!");
           }
         }
       }
@@ -105,40 +85,87 @@ Board.prototype = {
   }
 }
 
-$(document).ready(function(){
-  window.boards = [];
-  var small_boards = $('.board.small');
+var UltimateBoard = function UltimateBoard() {
+  this.boards = []
+  this.turnCount = 0;
+  this.active = true;
+  this.last_x = -1;
+  this.last_y = -1;
 
-  for(i=0; i < 3; i++) {
+  for(var i=0; i<3; i++) {
     var row = [];
-    for(j=0; j < 3; j++) {
+    for(var j=0; j<3; j++) {
       row.push(new Board());
+    };
+    this.boards.push(row);
+  };
+};
+
+UltimateBoard.prototype = {
+  checkVictory: function(x, y) {
+    this.boards[x][y].checkVictory();
+  },
+  current_player: function() {
+    if (this.turnCount % 2 === 0) {
+      return player_x;
+    } else {
+      return player_o;
+    };
+  },
+
+  play: function(x, y, xx, yy) {
+    // The board the previous player redirected to has been conquered. Now the current player can place anywhere.
+    if (!this.boards[this.last_x][this.last_y].active) {
+      this.last_x = -1;
+      this.last_y = -1;
+    };
+
+    if (this.last_x == -1 || this.last_x == x && this.last_y == y) {
+      if (this.boards[x][y].play(xx, yy, this.current_player())) {
+        this.last_x = xx;
+        this.last_y = yy;
+        this.turnCount += 1;
+        if (this.checkVictory(x, y)) {
+          this.boards[x][y].active = false;
+          console.log("Board at " + x + ', ' + y + ' has been won!');
+        } else if (this.boards[x][y].checkTie()) {
+          this.boards[x][y].active = false;
+          console.log("Board at " + x + ', ' + y + ' has been tied.');
+        }
+        return true;
+      } else {
+        console.log('That space has been taken!');
+        return false;
+      }
+    } else {
+      console.log('You must play within the big square corresponding to the little square.');
+      return false;
     }
-    window.boards.push(row);
   }
+};
+
+$(document).ready(function(){
+  window.ultimate_board = new UltimateBoard();
 
   $('.master_board').find('.tile').click(function(){
-    if (!$(this).hasClass('active')) {
-      var board_x = $(this).parent().parent().parent().index();
-      var board_y = $(this).parent().parent().index();
+    var board_x = $(this).parent().parent().parent().index();
+    var board_y = $(this).parent().parent().index();
 
-      var board = window.boards[board_x][board_y];
+    var x = $(this).parent().index();
+    var y = $(this).index();
 
-      var x = $(this).parent().index();
-      var y = $(this).index();
-      $(this).addClass('active');
-      if (board.play(x, y)) {
-        if (board.current_player() == player_x) {
-          $(this).addClass('x-class');
-        } else {
-          $(this).addClass('o-class');
-        }
+    if (ultimate_board.play(board_x, board_y, x, y)) {
+      $(this).addClass(ultimate_board.current_player() + '-class');
+
+      if (ultimate_board.boards[board_x][board_y].checkVictory()) {
+        $(this).parent().parent().addClass(ultimate_board.current_player() + '-class');
       }
     }
   });
 
   $('#reset-btn').click(function() {
-    board = new Board();
+    window.ultimate_board = new UltimateBoard();
+    $('.board.small').removeClass('active o-class x-class');
     $('.board.small').find('.tile').removeClass('active o-class x-class');
   });
 });

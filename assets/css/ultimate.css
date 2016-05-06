@@ -42,15 +42,21 @@ div.board.small {
 }
 
 .tile {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   float: left;
   min-height: 1px;
   height: 100%;
   width: 33%;
+  border: 3px solid grey;
 }
 
 .x-class {
   background-color: red;
+  border: 3px solid darkred;
 }
 .o-class {
   background-color: blue;
+  border: 3px solid darkblue;
 }

@@ -102,9 +102,34 @@ var UltimateBoard = function UltimateBoard() {
 };
 
 UltimateBoard.prototype = {
-  checkVictory: function(x, y) {
-    this.boards[x][y].checkVictory();
+  checkVictory: function() {
+    var row0 = this.checkLine([this.boards[0][0], this.boards[0][1], this.boards[0][2]]);
+    var row1 = this.checkLine([this.boards[1][0], this.boards[1][1], this.boards[1][2]]);
+    var row2 = this.checkLine([this.boards[2][0], this.boards[2][1], this.boards[2][2]]);
+
+    var col0 = this.checkLine([this.boards[0][0], this.boards[1][0], this.boards[2][0]]);
+    var col1 = this.checkLine([this.boards[0][1], this.boards[1][1], this.boards[2][1]]);
+    var col2 = this.checkLine([this.boards[0][2], this.boards[1][2], this.boards[2][2]]);
+
+    var diag1 = this.checkLine([this.boards[0][0], this.boards[1][1], this.boards[2][2]]);
+    var diag2 = this.checkLine([this.boards[2][0], this.boards[1][1], this.boards[0][2]]);
+    return (row0 || row1 || row2 || col0 || col1 || col2 || diag1 || diag2);
   },
+
+  checkLine: function(arr) {
+    var first = arr[0];
+    if (first.active) { return false };
+    return arr.every(function(el) {
+      return el.player !== 0 && el.player === first.player;
+    });
+  },
+
+  checkTie: function() {
+    return this.boards.every(function(el) {
+      return !el[0].active && !el[1].active && !el[2].active;
+    });
+  },
+
   current_player: function() {
     if (this.turnCount % 2 === 0) {
       return player_x;
@@ -125,7 +150,7 @@ UltimateBoard.prototype = {
         this.last_x = xx;
         this.last_y = yy;
         this.turnCount += 1;
-        if (this.checkVictory(x, y)) {
+        if (this.boards[x][y].checkVictory()) {
           this.boards[x][y].active = false;
           console.log("Board at " + x + ', ' + y + ' has been won!');
         } else if (this.boards[x][y].checkTie()) {

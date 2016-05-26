@@ -53,10 +53,16 @@ div.board.small {
 }
 
 .x-class {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   background-color: red;
   border: 3px solid darkred;
 }
 .o-class {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   background-color: blue;
   border: 3px solid darkblue;
 }

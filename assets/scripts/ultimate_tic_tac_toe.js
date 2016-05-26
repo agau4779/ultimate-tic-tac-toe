@@ -80,7 +80,7 @@ Board.prototype = {
           str += row[j].player;
         }
       }
-      console.log(str);
+      alert(str);
     }
   }
 }
@@ -140,7 +140,7 @@ UltimateBoard.prototype = {
 
   play: function(x, y, xx, yy) {
     // The board the previous player redirected to has been conquered. Now the current player can place anywhere.
-    if (!this.boards[this.last_x][this.last_y].active) {
+    if (this.last_x > -1 && !this.boards[this.last_x][this.last_y].active) {
       this.last_x = -1;
       this.last_y = -1;
     };
@@ -152,18 +152,20 @@ UltimateBoard.prototype = {
         this.turnCount += 1;
         if (this.boards[x][y].checkVictory()) {
           this.boards[x][y].active = false;
-          console.log("Board at " + x + ', ' + y + ' has been won!');
+          if (this.checkVictory()) {
+            alert("Congratulations, player " + this.current_player() + " won! Click 'Reset' to play again.");
+            this.active = false;
+          }
         } else if (this.boards[x][y].checkTie()) {
           this.boards[x][y].active = false;
-          console.log("Board at " + x + ', ' + y + ' has been tied.');
         }
         return true;
       } else {
-        console.log('That space has been taken!');
+        alert('That space has been taken!');
         return false;
       }
     } else {
-      console.log('You must play within the big square corresponding to the little square.');
+      alert('You must play within the big square corresponding to the little square. (Hint: ' + this.last_x + ', ' + this.last_y + ')');
       return false;
     }
   }

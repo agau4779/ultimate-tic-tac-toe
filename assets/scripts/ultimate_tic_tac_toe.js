@@ -161,15 +161,28 @@ UltimateBoard.prototype = {
         }
         return true;
       } else {
-        alert('That space has been taken!');
         return false;
       }
     } else {
-      alert('You must play within the big square corresponding to the little square. (Hint: ' + this.last_x + ', ' + this.last_y + ')');
       return false;
     }
   }
 };
+
+function shake(div){
+    var interval = 100;
+    var distance = 10;
+    var times = 4;
+
+    $(div).css('position','relative');
+
+    for(var iter=0;iter<(times+1);iter++){
+        $(div).animate({
+            left:((iter%2==0 ? distance : distance*-1))
+            },interval);
+    }//for
+    $(div).animate({ left: 0},interval);
+}
 
 $(document).ready(function(){
   window.ultimate_board = new UltimateBoard();
@@ -187,6 +200,8 @@ $(document).ready(function(){
       if (ultimate_board.boards[board_x][board_y].checkVictory()) {
         $(this).parent().parent().addClass(ultimate_board.current_player() + '-class');
       }
+    } else {
+      shake($('.master_board .board')[ultimate_board.last_x * 3 + ultimate_board.last_y]);
     }
   });
 

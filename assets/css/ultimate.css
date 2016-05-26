@@ -11,26 +11,31 @@ body {
   margin: 50px;
 }
 
+
 div.master_board {
   background-color: white;
   position: absolute;
   left:50%;
   top:50%;
-  height: 600px;
-  width: 600px;
-  margin-left:-300px;
-  margin-top:-300px;
+  height: 350px;
+  width: 350px;
+  margin-left:-170px;
+  margin-top:-170px;
 }
 
 div.board.small {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   float: left;
   height: 100%;
-  width: 33%;
+  width: calc(100% / 3);
+  border: 3px solid grey;
 }
 
 .row {
   display: block;
-  height: 33%;
+  height: calc(100% / 3);
   width: 100%;
 }
 
@@ -48,8 +53,32 @@ div.board.small {
   float: left;
   min-height: 1px;
   height: 100%;
-  width: 33%;
-  border: 3px solid grey;
+  width: calc(100% / 3);
+  border: 1px solid grey;
+}
+
+.board.small.x-class {
+  border: 3px solid darkred;
+}
+
+.board.small.o-class {
+  border: 3px solid darkblue;
+}
+
+.board.small.x-class .tile {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  opacity: 0.3;
+  border: 3px solid darkred;
+}
+
+.board.small.o-class .tile {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  opacity: 0.3;
+  border: 3px solid darkblue;
 }
 
 .x-class {

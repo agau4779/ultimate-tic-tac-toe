@@ -139,6 +139,7 @@ UltimateBoard.prototype = {
   },
 
   play: function(x, y, xx, yy) {
+    if (this.checkVictory) { return false; }
     // The board the previous player redirected to has been conquered. Now the current player can place anywhere.
     if (this.last_x > -1 && !this.boards[this.last_x][this.last_y].active) {
       this.last_x = -1;
@@ -153,7 +154,6 @@ UltimateBoard.prototype = {
         if (this.boards[x][y].checkVictory()) {
           this.boards[x][y].active = false;
           if (this.checkVictory()) {
-            alert("Congratulations, player " + this.current_player() + " won! Click 'Reset' to play again.");
             this.active = false;
           }
         } else if (this.boards[x][y].checkTie()) {
@@ -199,6 +199,16 @@ $(document).ready(function(){
 
       if (ultimate_board.boards[board_x][board_y].checkVictory()) {
         $(this).parent().parent().addClass(ultimate_board.current_player() + '-class');
+      }
+
+      if (ultimate_board.checkVictory()) {
+        var color;
+        if (ultimate_board.current_player() == player_x) {
+          color = 'Red';
+        } else {
+          color = 'Blue';
+        }
+        alert("Congratulations, " + color + " won! Click 'Reset' to play again.");
       }
     } else {
       shake($('.master_board .board')[ultimate_board.last_x * 3 + ultimate_board.last_y]);
